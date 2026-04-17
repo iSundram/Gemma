@@ -1,37 +1,49 @@
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*", // replace with your frontend origin if needed
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
+  "Access-Control-Allow-Headers": "Content-Type",
+};
+
 export default {
   async fetch(request, env) {
-    // 1. Ensure the request is a POST
-    if (request.method !== "POST") {
-      return new Response("Method Not Allowed. Please send a POST request.", { status: 405 });
+    const { method } = request;
+
+    // Handle preflight request
+    if (method === "OPTIONS") {
+      return new Response(null, {
+        status: 204,
+        headers: corsHeaders,
+      });
+    }
+
+    // Allow only POST requests
+    if (method !== "POST") {
+      return new Response("Method Not Allowed", {
+        status: 405,
+        headers: corsHeaders,
+      });
     }
 
     try {
-      // 2. Extract only the prompt from the request body
       const { prompt } = await request.json();
 
-      if (!prompt) {
-        return Response.json({ error: "No prompt provided" }, { status: 400 });
-      }
+      const result = await env.AI.run(
+        "@cf/google/gemma-4-26b-a4b-it",
+        { prompt }
+      );
 
-      // 3. Define the specific Gemma model path
-      const modelName = "@cf/google/gemma-4-26b-a4b-it";
-
-      // 4. Execute the AI request
-      const response = await env.AI.run(modelName, {
-        prompt: prompt
+      return new Response(JSON.stringify({ result }), {
+        status: 200,
+        headers: {
+          "Content-Type": "application/json",
+          ...corsHeaders,
+        },
       });
-
-      // 5. Return the AI generation result
-      return Response.json({
-        model: modelName,
-        result: response
-      });
-
     } catch (err) {
-      return Response.json({ 
-        error: "Internal Server Error", 
-        message: err.message 
-      }, { status: 500 });
+      return new Response("Bad Request", {
+        status: 400,
+        headers: corsHeaders,
+      });
     }
-  }
+  },
 };
