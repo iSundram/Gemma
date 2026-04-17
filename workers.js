@@ -14,7 +14,7 @@ export default {
       }
 
       // 3. Define the specific Gemma model path
-      const modelName = "@cf/google/gemma-7b-it";
+      const modelName = "@cf/google/gemma-4-26b-a4b-it";
 
       // 4. Execute the AI request
       const response = await env.AI.run(modelName, {
