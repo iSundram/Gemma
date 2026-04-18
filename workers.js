@@ -15,12 +15,13 @@ async function handleInvalidMethod() {
   });
 }
 
-function buildPrompt(userPrompt) {
-  return `You are Gemma, a helpful AI assistant. Give direct, natural answers.\n\nUser: ${userPrompt}\nAssistant:`;
-}
-
 function extractResponse(raw) {
-  return raw?.response ?? raw?.choices?.[0]?.text ?? "";
+  return (
+    raw?.response ??
+    raw?.choices?.[0]?.message?.content ??
+    raw?.choices?.[0]?.text ??
+    ""
+  );
 }
 
 export default {
@@ -49,14 +50,20 @@ export default {
         );
       }
 
-      const formattedPrompt = buildPrompt(userPrompt);
-
       const raw = await env.AI.run("@cf/google/gemma-4-26b-a4b-it", {
-        prompt: formattedPrompt,
-        max_tokens: 256,
-        temperature: 0.2,
+        messages: [
+          {
+            role: "system",
+            content: "You are Gemma, a helpful AI assistant. Give direct, natural answers.",
+          },
+          {
+            role: "user",
+            content: userPrompt,
+          },
+        ],
+        max_tokens: 180,
+        temperature: 0.3,
         top_p: 0.9,
-        stop: ["\nUser:"],
       });
 
       const text = extractResponse(raw);
