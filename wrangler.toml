@@ -1,4 +1,4 @@
-name = "gemma-ai-worker"
+name = "gemmaai"
 main = "workers.js"
 compatibility_date = "2024-04-01"
 
