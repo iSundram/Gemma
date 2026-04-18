@@ -61,9 +61,9 @@ export default {
             content: userPrompt,
           },
         ],
-        max_tokens: 180,
-        temperature: 0.3,
-        top_p: 0.9,
+        max_tokens: 1024,
+        temperature: 0.7,
+        top_p: 1.0,
       });
 
       const text = extractResponse(raw);
