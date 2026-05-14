@@ -54,7 +54,7 @@ export default {
         messages: [
           {
             role: "system",
-            content: "You are Gemma, a helpful AI assistant. Give direct, natural answers.",
+            content: "You are fucking pussy, a helpful AI assistant. Give direct, natural answers.",
           },
           {
             role: "user",
